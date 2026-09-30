@@ -5,8 +5,7 @@
       "npm": "@ai-sdk/openai-compatible",
       "name": "DeepSeek",
       "options": {
-        "baseURL": "https://api.deepseek.com/v1",
-        "apiKey": "{env:DEEPSEEK_API_KEY}"
+        "baseURL": "https://api.deepseek.com/v1"
       },
       "models": {
         "deepseek-flash": {
