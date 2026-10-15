@@ -1,3 +1,69 @@
 {
-  "$schema": "https://raw.githubusercontent.com/Opencode-DCP/opencode-dynamic-context-pruning/master/dcp.schema.json"
+  "$schema": "https://raw.githubusercontent.com/Opencode-DCP/opencode-dynamic-context-pruning/master/dcp.schema.json",
+
+  // Прунинг включён, но работает мягко: при окне 1M токенов начинаем
+  // напоминать о сжатии только у 750k, чтобы модель не «тупела» от частых сокращений.
+  "enabled": true,
+
+  // Не обновлять пакет автоматически — версию меняем осознанно.
+  "autoUpdate": false,
+
+  // Уведомления о прунинге — минимальные, чтобы не мешать.
+  "pruneNotification": "minimal",
+  "pruneNotificationType": "chat",
+
+  "commands": {
+    "enabled": true,
+  },
+
+  // Автономный режим: плагин сам решает, когда подсказать модели сжать контекст.
+  "manualMode": {
+    "enabled": false,
+    "automaticStrategies": true,
+  },
+
+  // Не трогаем свежие (последние 4 хода) tool-вызовы — даём модели подумать.
+  "turnProtection": {
+    "enabled": true,
+    "turns": 4,
+  },
+
+  "compress": {
+    // "range" — сжимаем связные участки диалога в резюме.
+    "mode": "range",
+    // Не спрашивать разрешения у пользователя при сжатии.
+    "permission": "allow",
+    "showCompression": false,
+    // Токены активного резюме продлевают эффективный лимит.
+    "summaryBuffer": true,
+
+    // ── Ключевые пороги ──────────────────────────────────────────────
+    // Верхний порог: выше 750k токенов DCP усиленно намекает модели сжать.
+    "maxContextLimit": 750000,
+    // Нижний порог: ниже 400k напоминания выключены — сжатие маловероятно.
+    "minContextLimit": 400000,
+    // Напоминание срабатывает раз в 8 запросов, а не каждый — реже дёргаем.
+    "nudgeFrequency": 8,
+    // Начинать напоминать после 30 сообщений с последнего пользовательского.
+    "iterationNudgeThreshold": 30,
+    // Мягкая сила напоминаний (не давим на модель).
+    "nudgeForce": "soft",
+
+    // Сохранять текст в <protect>...</protect> при сжатии.
+    "protectTags": true,
+    // Сообщения пользователя не сжимаем — важно для контекста задачи.
+    "protectUserMessages": true,
+  },
+
+  "strategies": {
+    // Дедупликация повторных одинаковых tool-вызовов.
+    "deduplication": {
+      "enabled": true,
+    },
+    // Чистка входных данных ошибочных tool-вызовов через 6 ходов.
+    "purgeErrors": {
+      "enabled": true,
+      "turns": 6,
+    },
+  },
 }
