@@ -1,0 +1,4 @@
+interface:
+  display_name: "Cutweight Audit"
+  short_description: "Weigh your agent and read the context bill."
+  default_prompt: "Use Cutweight Audit: measure my always-on context bill (skills, memory files, MCP schemas), assign my weight class, print the card and show the delta from my last weigh-in, and produce a keep/trim/cut list with measured numbers. Do not delete anything."
