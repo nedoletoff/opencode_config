@@ -11,8 +11,8 @@
         "deepseek-flash": {
           "name": "DeepSeek-V4-Flash",
           "limit": {
-            "context": 131072,
-            "output": 16384
+            "context": 1000000,
+            "output": 393216
           },
           "options": {
             "thinking": {
@@ -23,8 +23,8 @@
         "deepseek-v4-pro": {
           "name": "DeepSeek-V4-Pro",
           "limit": {
-            "context": 131072,
-            "output": 262144
+            "context": 1000000,
+            "output": 393216
           },
           "options": {
             "thinking": {
@@ -37,11 +37,6 @@
     }
   },
   "model": "deepseek/deepseek-flash",
-  "plugin": [
-    "@tianhuil/opencode-dotenv",
-    "opencode-deepseek-thinking-fix",
-    "agent-cache-optimizer"
-  ],
   "compaction": {
     "auto": false
   }
