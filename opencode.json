@@ -38,8 +38,7 @@
   },
   "model": "deepseek/deepseek-flash",
   "plugins": [
-    "@tarquinen/opencode-dcp",
-    "@cortexkit/opencode-magic-context"
+    "@tarquinen/opencode-dcp"
   ],
   "compaction": {
     "auto": false
