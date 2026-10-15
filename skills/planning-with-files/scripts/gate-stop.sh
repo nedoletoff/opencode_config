@@ -22,8 +22,8 @@ TARGET="${SCRIPT_DIR}/check-complete.sh"
 if [ ! -f "$TARGET" ] && [ -n "${HOME:-}" ]; then
     # ${HOME:-} keeps set -u from aborting the substitution in CI/Docker images
     # where HOME is unset; without the guard the shell exits before the gate runs.
-    TARGET=$(ls "${HOME}/.claude/skills/planning-with-files/scripts/check-complete.sh" \
-                "${HOME}/.claude/plugins/marketplaces/planning-with-files/scripts/check-complete.sh" \
+    TARGET=$(ls "${HOME}/.config/opencode/skills/planning-with-files/scripts/check-complete.sh" \
+                "${HOME}/.claude/skills/planning-with-files/scripts/check-complete.sh" \
                 2>/dev/null | head -1)
 fi
 

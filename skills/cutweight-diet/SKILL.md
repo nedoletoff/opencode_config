@@ -8,7 +8,8 @@ description: >
   window, or when the token bill grows without more work getting done.
   Produces a keep/trim/cut table with measured numbers. Does not delete
   anything.
-allowed-tools: Read Grep Glob
+metadata:
+  opencode/autoinvoke: "true"
 ---
 
 # Skill Diet

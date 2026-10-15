@@ -40,12 +40,9 @@
   "plugin": [
     "@tianhuil/opencode-dotenv",
     "opencode-deepseek-thinking-fix",
-    "agent-cache-optimizer",
-    "@tarquinen/opencode-dcp@latest",
-    "opencode-snip@latest",
-    "opencode-context-manager@latest"
+    "agent-cache-optimizer"
   ],
   "compaction": {
-    "auto": true
+    "auto": false
   }
 }

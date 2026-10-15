@@ -140,8 +140,8 @@ fi
 # --- [5] install surfaces ----------------------------------------------------
 FOUND_SURFACE=0
 for s in \
-    ".claude/skills/planning-with-files" \
-    "${HOME:-}/.claude/skills/planning-with-files" \
+    ".config/opencode/skills/planning-with-files" \
+    "${HOME:-}/.config/opencode/skills/planning-with-files" \
     ".agents/skills/planning-with-files" \
     "${HOME:-}/.agents/skills/planning-with-files"
 do

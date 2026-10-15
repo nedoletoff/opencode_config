@@ -1,25 +1,25 @@
 ---
 name: handoff
-description: Generate a HANDOFF.md that captures goal, current state, files touched, failed attempts, and next steps — so a fresh Claude session can continue exactly where this one left off. Use when sessions are getting long, Claude keeps retrying the same broken solution, or the user wants to step away and resume later.
+description: Generate a HANDOFF.md that captures goal, current state, files touched, failed attempts, and next steps — so a fresh OpenCode session can continue exactly where this one left off. Use when sessions are getting long, the agent keeps retrying the same broken solution, or the user wants to step away and resume later.
 ---
 
 # Handoff
 
-Generate a structured `HANDOFF.md` file that gives a fresh Claude session everything it needs to continue this work without dragging the current degraded context forward.
+Generate a structured `HANDOFF.md` file that gives a fresh OpenCode session everything it needs to continue this work without dragging the current degraded context forward.
 
-claude-mem already injects recent observations into every new session, so the fresh agent starts with a timeline of what happened. The handoff adds what that timeline cannot: the goal, the failed attempts and why they failed, the current theory, and exact next steps, plus pointers into memory for deeper recall.
+A fresh session starts with no memory of what happened here. The handoff supplies what a new agent needs: the goal, the failed attempts and why they failed, the current theory, and exact next steps.
 
 ## When to Use
 
-- The session is long and Claude feels confused or repetitive
-- Claude keeps trying the same failing solution over and over
+- The session is long and the agent feels confused or repetitive
+- The agent keeps trying the same failing solution over and over
 - The user wants to step away and resume later
-- `/compact` ran but Claude still lacks clear direction
+- Compaction ran but the agent still lacks clear direction
 - The user says "handoff", "generate a handoff", "I want to start fresh", or "write a handoff doc"
 
 ## What to Capture
 
-Think hard about the full arc of this conversation before writing. The handoff must be useful to a Claude instance that has never seen this conversation.
+Think hard about the full arc of this conversation before writing. The handoff must be useful to an agent that has never seen this conversation.
 
 ### Required Sections
 
@@ -37,11 +37,11 @@ Think hard about the full arc of this conversation before writing. The handoff m
 
 7. **Key Constraints and Context** — Any non-obvious constraints: environment specifics, user preferences expressed during this session, things the user explicitly said NOT to do, external dependencies, performance requirements, etc.
 
-8. **Memory Pointers** — If claude-mem's search tools are available, run `search` for this task's key terms and list the few observation IDs that matter most (a decision, the root cause, a failed approach), so the fresh agent can pull full details with `get_observations`. Also list one or two `search` queries worth re-running. Skip this section if the tools are not available.
+8. **Memory Pointers** — If any persistent memory or session-history search tools are available, list the few entries that matter most (a decision, the root cause, a failed approach) with one line each on why they matter, so the fresh agent can pull full details. Skip this section if no such tools are available.
 
 ## Writing Rules
 
-- Write the handoff for a fresh Claude, not for the user. The user knows what happened; the fresh Claude does not.
+- Write the handoff for a fresh agent, not for the user. The user knows what happened; the fresh agent does not.
 - Be ruthlessly specific. Vague next steps are useless. "Fix the auth" is bad. "In `src/auth/middleware.ts:47`, the token expiry check uses `Date.now()` but should use `req.timestamp` — change the comparison on line 52" is good.
 - Include exact error messages, stack traces, or test output that captures the failure mode.
 - Do not pad. Every sentence should be load-bearing information for the fresh agent.
@@ -113,9 +113,9 @@ Use this structure:
 Tell the user:
 
 1. That `HANDOFF.md` has been written
-2. To run `/clear` or start a new Claude Code session
+2. To run `/clear` or start a new OpenCode session
 3. To open the new session and say: **"Read HANDOFF.md and continue from where we left off."**
-4. That claude-mem gives the fresh agent the recent timeline automatically, and `HANDOFF.md` is its precise briefing on top of that
+4. That `HANDOFF.md` is the fresh agent's precise briefing
 5. That `HANDOFF.md` is a scratch file: don't commit it (delete it once the new session has picked up, or add it to `.gitignore`)
 
 Keep the message short. The user is ready to move — don't make them read a wall of text.

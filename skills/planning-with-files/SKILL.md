@@ -1,34 +1,9 @@
 ---
 name: planning-with-files
-description: "Persistent file-based planning for multi-step AI-agent work. Keeps task_plan.md, findings.md, and progress.md on disk; lifecycle hooks inject selected project planning context. Automatic recovery reads project planning files only. Explicit session-catchup.py --metadata reads same-project local agent session records and emits aggregate counts only; --replay may emit bounded nonce-framed excerpts. Optional gated mode can request continuation only when the host supports it and never runs commands declared in Markdown. The skill has no network upload path. Use for research or work needing 5+ tool calls."
-user-invocable: true
-allowed-tools: "Read Write Edit Bash Glob Grep"
-hooks:
-  UserPromptSubmit:
-    - hooks:
-        - type: command
-          command: "[ -n \"${CLAUDE_PLUGIN_ROOT:-}\" ] && exit 0; SH=\"${CLAUDE_SKILL_DIR}/scripts/skill-hook.sh\"; [ -f \"$SH\" ] || SH=$(ls \"$HOME/.claude/skills/planning-with-files/scripts/skill-hook.sh\" \"$HOME/.claude/plugins/marketplaces/planning-with-files/scripts/skill-hook.sh\" 2>/dev/null | head -1); [ -n \"$SH\" ] && [ -f \"$SH\" ] && sh \"$SH\" --event=userprompt; exit 0"
-  PreToolUse:
-    - matcher: "Write|Edit|Bash|Read|Glob|Grep"
-      hooks:
-        - type: command
-          command: "[ -n \"${CLAUDE_PLUGIN_ROOT:-}\" ] && exit 0; SH=\"${CLAUDE_SKILL_DIR}/scripts/skill-hook.sh\"; [ -f \"$SH\" ] || SH=$(ls \"$HOME/.claude/skills/planning-with-files/scripts/skill-hook.sh\" \"$HOME/.claude/plugins/marketplaces/planning-with-files/scripts/skill-hook.sh\" 2>/dev/null | head -1); [ -n \"$SH\" ] && [ -f \"$SH\" ] && sh \"$SH\" --event=pretool; exit 0"
-  PostToolUse:
-    - matcher: "Write|Edit"
-      hooks:
-        - type: command
-          command: "[ -n \"${CLAUDE_PLUGIN_ROOT:-}\" ] && exit 0; SH=\"${CLAUDE_SKILL_DIR}/scripts/skill-hook.sh\"; [ -f \"$SH\" ] || SH=$(ls \"$HOME/.claude/skills/planning-with-files/scripts/skill-hook.sh\" \"$HOME/.claude/plugins/marketplaces/planning-with-files/scripts/skill-hook.sh\" 2>/dev/null | head -1); [ -n \"$SH\" ] && [ -f \"$SH\" ] && sh \"$SH\" --event=posttool; exit 0"
-  Stop:
-    - hooks:
-        - type: command
-          command: "[ -n \"${CLAUDE_PLUGIN_ROOT:-}\" ] && exit 0; SH=\"${CLAUDE_SKILL_DIR}/scripts/skill-hook.sh\"; [ -f \"$SH\" ] || SH=$(ls \"$HOME/.claude/skills/planning-with-files/scripts/skill-hook.sh\" \"$HOME/.claude/plugins/marketplaces/planning-with-files/scripts/skill-hook.sh\" 2>/dev/null | head -1); [ -n \"$SH\" ] && [ -f \"$SH\" ] && sh \"$SH\" --event=stop; exit 0"
-  PreCompact:
-    - matcher: "*"
-      hooks:
-        - type: command
-          command: "[ -n \"${CLAUDE_PLUGIN_ROOT:-}\" ] && exit 0; SH=\"${CLAUDE_SKILL_DIR}/scripts/skill-hook.sh\"; [ -f \"$SH\" ] || SH=$(ls \"$HOME/.claude/skills/planning-with-files/scripts/skill-hook.sh\" \"$HOME/.claude/plugins/marketplaces/planning-with-files/scripts/skill-hook.sh\" 2>/dev/null | head -1); [ -n \"$SH\" ] && [ -f \"$SH\" ] && sh \"$SH\" --event=precompact; exit 0"
+description: "Persistent file-based planning for multi-step AI-agent work. Keeps task_plan.md, findings.md, and progress.md on disk. Automatic recovery reads project planning files only. Explicit session-catchup.py --metadata reads same-project local agent session records and emits aggregate counts only; --replay may emit bounded nonce-framed excerpts. The skill has no network upload path. Use for research or work needing 5+ tool calls."
 metadata:
   version: "3.21.0"
+  opencode/slash: "true"
 ---
 
 # Planning with Files
@@ -48,8 +23,8 @@ All planning filenames below refer to this selected directory, even when the she
 Automatic recovery stops there. Bare `session-catchup.py` and lifecycle hooks do not inspect agent session stores. Only when the user explicitly asks to consult local session history, choose one of these modes:
 
 ```bash
-# Linux/macOS — auto-detects skill directory (plugin env or default install path)
-SKILL_DIR="${CLAUDE_PLUGIN_ROOT:-$HOME/.claude/skills/planning-with-files}"
+# Linux/macOS — auto-detects skill directory
+SKILL_DIR="$HOME/.config/opencode/skills/planning-with-files"
 # Same-project counts only; no transcript excerpts
 $(command -v python3 || command -v python) "${SKILL_DIR}/scripts/session-catchup.py" --metadata "$(pwd)"
 
@@ -67,7 +42,7 @@ Metadata mode may report that same-project session activity exists, but it emits
 
 ## Important: Where Files Go
 
-- **Templates and scripts** are relative to this installed `SKILL.md`. Plugin installs also expose them under `${CLAUDE_PLUGIN_ROOT}/`.
+- **Templates and scripts** are relative to this installed `SKILL.md`.
 - **Your planning files** go in **the selected task directory in your project**
 
 | Location | What Goes There |
@@ -286,7 +261,7 @@ Not every install path ships every surface in this section. Two distinct install
 | `/plugin marketplace add OthmanAdi/planning-with-files` then `/plugin install` | SKILL.md, scripts, templates, **plus `commands/` folder** | Yes, as `/plan-goal` and `/plan-loop` |
 | `npx skills add OthmanAdi/planning-with-files` (or ClawHub) | SKILL.md, scripts, templates only | No, follow the manual fallback below |
 
-Plugin installs register six lifecycle events from `hooks/hooks.json`, including quiet `SessionStart` recovery. Standalone skill installs register the five hooks in this SKILL.md frontmatter only after the skill is invoked for that session, so they have no startup recovery. The `/plan-goal` and `/plan-loop` slash commands live in `commands/` at the repository root and are available from the versioned plugin cache. Skill-only installs land at `~/.claude/skills/planning-with-files/` and do not include `commands/`.
+В OpenCode скилы не поддерживают lifecycle-хуки из frontmatter, поэтому автоматическое восстановление состояния выполняется вручную при вызове скила: прочитай выбранный план и запусти `git diff --stat`. Скил установлен в `~/.config/opencode/skills/planning-with-files/`.
 
 The standalone `scripts/skill-hook.sh` reads the host's JSON session identity. UserPromptSubmit emits plain context; PreToolUse and PostToolUse emit the event's `additionalContext` JSON. The progress reminder fires at most once per turn when a usable session identity and private cache are available, and repeats when those are unavailable. All five events follow the same plan selection and opt-out checks.
 
@@ -349,8 +324,8 @@ Both procedures match what the `commands/plan-goal.md` and `commands/plan-loop.m
 Claude Code's bare `/loop` reads `.claude/loop.md` (project) or `~/.claude/loop.md` (user). v2.38 ships a planning-aware template at `templates/loop.md`. Install once:
 
 ```bash
-# Resolve the host-provided installation folder, or set it explicitly.
-PWF_SKILL_DIR="${CLAUDE_SKILL_DIR:-${CLAUDE_PLUGIN_ROOT:-$HOME/.claude/skills/planning-with-files}}"
+# Resolve the installation folder.
+PWF_SKILL_DIR="$HOME/.config/opencode/skills/planning-with-files"
 # user-wide
 cp "${PWF_SKILL_DIR}/templates/loop.md" ~/.claude/loop.md
 
